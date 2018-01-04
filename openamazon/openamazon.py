@@ -6,11 +6,25 @@ from bs4 import BeautifulSoup
 import tablib
 from urlparse import urlparse
 
-base_url="http://www.amazon.in/s/ref=nb_sb_noss?url=search-alias=aps&field-keywords="
+# 
+
 class amazon:
 	max_attempts=0
-	def __init__(self):
-		pass
+	
+	
+	def __init__(self, site_loc="in", max_result_pages=1):
+		self.site_loc = site_loc
+		self.base_url='http://www.amazon.' + self.site_loc + '/s/ref=nb_sb_noss?url=search-alias=aps&field-keywords='
+		self.num_of_results=max_result_pages*16
+		self.max_result_pages=max_result_pages
+		
+		
+	def __get_search_url(self, keyword):
+		return self.base_url + keyword + '&page='+str(pages)
+	
+	
+	get __get_offer_url(self):
+		return 'http://www.amazon.' + self.site_loc + '/gp/offer-listing/'
 
 	def product_details(self,url):
 		print "AMAZON...product details"
@@ -50,12 +64,10 @@ class amazon:
 
 	def search(self,keyword):
 		try:
-			pages=1
-			num_of_results=pages*16
 			search_results=[]
-			html=urlopen(base_url+keyword+"&page="+str(pages)).read()
+			html=urlopen(self.__get_search_url(keyword)).read()
 			soup=BeautifulSoup(html,"lxml")
-			for x in range(0,num_of_results):
+			for x in range(0,self.num_of_results):
 				s_res={}
 				res_obj=soup.find(id="result_"+str(x))
 				r1=res_obj.find("div",{"class":"a-fixed-left-grid-col a-col-right"})
@@ -88,7 +100,7 @@ class amazon:
 
 	def offer_listing(self,url):
 		ref_link=urlparse(url).path.split('/')[3]
-		ol_url='http://www.amazon.in/gp/offer-listing/'
+		ol_url='http://www.amazon.' + self.site_loc + '/gp/offer-listing/'
 		offers=[]
 		soup=None
 		print "AMAZON...offer listing"
